@@ -9,23 +9,23 @@ from utils import *
 
 banner()
 
-parser = optparse.OptionParser(usage='python %prog -I eth0 -w -r -f\nor:\npython %prog -I eth0 -wrf', version=settings.__version__, prog=sys.argv[0])
-parser.add_option('-A','--analyze',        action="store_true", help="Analyze mode. This option allows you to see NBT-NS, BROWSER, LLMNR requests without responding.", dest="Analyze", default=False)
-parser.add_option('-I','--interface',      action="store",      help="Network interface to use", dest="Interface", metavar="eth0", default=None)
-parser.add_option('-i','--ip',      action="store",      help="Local IP to use \033[1m\033[31m(only for OSX)\033[0m", dest="OURIP", metavar="10.0.0.21", default=None)
-parser.add_option('-b', '--basic',         action="store_true", help="Return a Basic HTTP authentication. Default: NTLM", dest="Basic", default=False)
-parser.add_option('-r', '--wredir',        action="store_true", help="Enable answers for netbios wredir suffix queries. Answering to wredir will likely break stuff on the network. Default: False", dest="Wredirect", default=False)
-parser.add_option('-d', '--NBTNSdomain',   action="store_true", help="Enable answers for netbios domain suffix queries. Answering to domain suffixes will likely break stuff on the network. Default: False", dest="NBTNSDomain", default=False)
-parser.add_option('-f','--fingerprint',    action="store_true", help="This option allows you to fingerprint a host that issued an NBT-NS or LLMNR query.", dest="Finger", default=False)
-parser.add_option('-w','--wpad',           action="store_true", help="Start the WPAD rogue proxy server. Default value is False", dest="WPAD_On_Off", default=False)
-parser.add_option('-u','--upstream-proxy', action="store",      help="Upstream HTTP proxy used by the rogue WPAD Proxy for outgoing requests (format: host:port)", dest="Upstream_Proxy", default=None)
-parser.add_option('-F','--ForceWpadAuth',  action="store_true", help="Force NTLM/Basic authentication on wpad.dat file retrieval. This may cause a login prompt. Default: False", dest="Force_WPAD_Auth", default=False)
-parser.add_option('--lm',                  action="store_true", help="Force LM hashing downgrade for Windows XP/2003 and earlier. Default: False", dest="LM_On_Off", default=False)
-parser.add_option('-v','--verbose',        action="store_true", help="Increase verbosity.", dest="Verbose")
+parser = optparse.OptionParser(usage='', version=settings.__version__, prog=sys.argv[0])
+parser.add_option('-A','--2analyze',        action="store_true", help=".", dest="Analyze", default=False)
+parser.add_option('-I','--2interface',      action="store",      help="", dest="Interface", metavar="eth0", default=None)
+parser.add_option('-i','--2ip',      action="store",      help="Local IP to use \033[1m\033[31m(only for OSX)\033[0m", dest="OURIP", metavar="10.0.0.21", default=None)
+parser.add_option('-b', '--2basic',         action="store_true", help="", dest="Basic", default=False)
+parser.add_option('-r', '--2wredir',        action="store_true", help="e", dest="Wredirect", default=False)
+parser.add_option('-d', '--2NBTNSdomain',   action="store_true", help="", dest="NBTNSDomain", default=False)
+parser.add_option('-f','--2fingerprint',    action="store_true", help=".", dest="Finger", default=False)
+parser.add_option('-w','--2wpad',           action="store_true", help="", dest="WPAD_On_Off", default=False)
+parser.add_option('-u','--2upstream-proxy', action="store",      help="", dest="Upstream_Proxy", default=None)
+parser.add_option('-F','--2ForceWpadAuth',  action="store_true", help="", dest="Force_WPAD_Auth", default=False)
+parser.add_option('--2lm',                  action="store_true", help="", dest="LM_On_Off", default=False)
+parser.add_option('-v','--2verbose',        action="store_true", help=".", dest="Verbose")
 options, args = parser.parse_args()
 
 if not os.geteuid() == 0:
-    print color("[!] Responder must be run as root.")
+    print color("[!] ponder must be run as admin.")
     sys.exit(-1)
 elif options.OURIP is None and IsOsX() is True:
     print "\n\033[1m\033[31mOSX detected, -i mandatory option is missing\033[0m\n"
@@ -40,7 +40,7 @@ StartupMessage()
 settings.Config.ExpandIPRanges()
 
 if settings.Config.AnalyzeMode:
-	print color('[i] Responder is in analyze mode. No NBT-NS, LLMNR, MDNS requests will be poisoned.', 3, 1)
+	print color('[i] ponder', 3, 1)
 
 class ThreadingUDPServer(ThreadingMixIn, UDPServer):
 	def server_bind(self):
@@ -102,7 +102,7 @@ def serve_thread_udp_broadcast(host, port, handler):
 		server = ThreadingUDPServer(('', port), handler)
 		server.serve_forever()
 	except:
-		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", "
 
 def serve_NBTNS_poisoner(host, port, handler):
 	serve_thread_udp_broadcast(host, port, handler)
@@ -112,14 +112,14 @@ def serve_MDNS_poisoner(host, port, handler):
 		server = ThreadingUDPMDNSServer((host, port), handler)
 		server.serve_forever()
 	except:
-		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", "
 
 def serve_LLMNR_poisoner(host, port, handler):
 	try:
 		server = ThreadingUDPLLMNRServer((host, port), handler)
 		server.serve_forever()
 	except:
-		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ","
 
 def serve_thread_udp(host, port, handler):
 	try:
@@ -130,7 +130,7 @@ def serve_thread_udp(host, port, handler):
 			server = ThreadingUDPServer((host, port), handler)
 			server.serve_forever()
 	except:
-		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", check permissions or other servers running."
+		print color("[!] ", 1, 1) + "Error starting UDP server on port " + str(port) + ", ."
 
 def serve_thread_tcp(host, port, handler):
 	try:
@@ -141,7 +141,7 @@ def serve_thread_tcp(host, port, handler):
 			server = ThreadingTCPServer((host, port), handler)
 			server.serve_forever()
 	except:
-		print color("[!] ", 1, 1) + "Error starting TCP server on port " + str(port) + ", check permissions or other servers running."
+		print color("[!] ", 1, 1) + "Error starting TCP server on port " + str(port) + ", "
 
 def serve_thread_SSL(host, port, handler):
 	try:
@@ -158,13 +158,13 @@ def serve_thread_SSL(host, port, handler):
 			server.socket = ssl.wrap_socket(server.socket, certfile=cert, keyfile=key, server_side=True)
 			server.serve_forever()
 	except:
-		print color("[!] ", 1, 1) + "Error starting SSL server on port " + str(port) + ", check permissions or other servers running."
+		print color("[!] ", 1, 1) + "Error " + str(port) + ", ."
 
 def main():
 	try:
 		threads = []
 
-		# Load (M)DNS, NBNS and LLMNR Poisoners
+		
 		from poisoners.LLMNR import LLMNR
 		from poisoners.NBTNS import NBTNS
 		from poisoners.MDNS import MDNS
@@ -172,7 +172,7 @@ def main():
 		threads.append(Thread(target=serve_MDNS_poisoner,  args=('', 5353, MDNS,)))
 		threads.append(Thread(target=serve_NBTNS_poisoner, args=('', 137,  NBTNS,)))
 
-		# Load Browser Listener
+		
 		from servers.Browser import Browser
 		threads.append(Thread(target=serve_thread_udp_broadcast, args=('', 138,  Browser,)))
 
@@ -237,7 +237,7 @@ def main():
 			thread.setDaemon(True)
 			thread.start()
 
-		print color('[+]', 2, 1) + " Listening for events..."
+		print color('[+]', 2, 1) + " Listening"
 
 		while True:
 			time.sleep(1)
